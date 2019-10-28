@@ -105,7 +105,7 @@ class Board
     position = gets.chomp.to_i
     until (1..9).include? position
       puts "Invalid Entry #{player.name.capitalize}, re-enter your position: "
-      position = gets.chomp
+      position = gets.chomp.to_i
     end
     find_cell = nil
     @cell_grid.each do |row|
@@ -155,10 +155,22 @@ class Game
   end
 
   def game_over(player)
-   if @board.winning_position(player)
-    puts "Congratulations #{player.name.capitalize} wins!"
-    @game_on = false
-   end
+    if @board.winning_position(player)
+      puts "Congratulations #{player.name.capitalize} wins!"
+      @game_on = false
+    end
+    game_tied = true
+    @board.cell_grid.each do |row|
+      if row.any? { |x| x.marker == nil }
+        game_tied = false
+        break
+      end
+    end
+
+    if game_tied
+      puts "The game is tied."
+      @game_on = false
+    end
   end
 
   def game_replay
@@ -192,13 +204,12 @@ class Game
     puts "#{player_second.name.capitalize}, your marker is #{player_second.marker}"
 
     player = player_first
-    
+    @board.draw
     while @game_on
       @board.choose_cell(player)
-      player = player == player_first ? player_second : player_first
       @board.draw
       game_over(player)
-      
+      player = player == player_first ? player_second : player_first
     end
   end
 end
