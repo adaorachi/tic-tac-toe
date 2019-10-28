@@ -1,7 +1,14 @@
 # frozen_string_literal: true
 
 class Cell
-  def choose_position
+
+  def initialize(id)
+    @id = id
+    @marker = nil
+  end
+
+  def content
+    @marker != nil ? @marker : @id
   end
 end
 
@@ -41,7 +48,21 @@ class Player
 end
   
 class Board
-  def draw_board
+  
+  attr_accessor :cell_grid
+  def initialize
+    reset
+  end
+
+  def draw
+    row = cell_grid[0]
+    puts "#{row[0].content} | #{row[1].content} | #{row[2].content}"
+    puts "---------"
+    row = cell_grid[1]
+    puts "#{row[0].content} | #{row[1].content} | #{row[2].content}"
+    puts "---------"
+    row = cell_grid[2]
+    puts "#{row[0].content} | #{row[1].content} | #{row[2].content}"
   end
 
   def display_board
@@ -59,11 +80,26 @@ class Board
   def win_diagonal
   end
 
-  def draw
+  def reset
+    @cell_grid = []
+    id = 1
+    (0..2).each do |row|
+      current_row = []
+      (0..2).each do |column|
+        current_row.push(Cell.new(id))
+        id += 1
+      end
+      cell_grid.push(current_row)
+    end
   end
 end
 
 class Game  
+  attr_accessor :board
+
+  def initialize
+    @board = Board.new
+  end
   def welcome_message
     puts "Welcome to Tic Tac Toe \n\n"
     puts "Press Enter to continue:"
@@ -104,7 +140,7 @@ class Game
     puts "#{player_first.name.capitalize}, your marker is #{player_first.marker}"
     puts "#{player_second.name.capitalize}, your marker is #{player_second.marker}"
 
-
+    board.draw
   end
 end
 
