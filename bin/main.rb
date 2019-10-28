@@ -14,8 +14,8 @@ end
 
 class Player 
   attr_accessor :name, :marker
-  def initialize(player = nil, name = nil)
-    @name = name
+  def initialize(player = nil)
+    @name = nil
     @player = player
     @marker = marker
   end
@@ -139,8 +139,6 @@ class Game
     puts "\n\n"
     puts "#{player_first.name.capitalize}, your marker is #{player_first.marker}"
     puts "#{player_second.name.capitalize}, your marker is #{player_second.marker}"
-
-    board.draw
   end
 end
 
