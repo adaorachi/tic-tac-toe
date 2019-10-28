@@ -73,23 +73,38 @@ class Board
 
   end
 
-  def winning_position
+  def winning_position(player)
+    row = win_row(player)
+    col = win_column(player)
+    dia = win_diagonal(player)
+    [row, col, dia].any?
   end
 
-  def win_row
+  def win_row(player)
+      row1 = [@cell_grid[0][0], @cell_grid[0][1], @cell_grid[0][2]].all? {|x| x.marker == player.marker}
+      row2 = [@cell_grid[1][0], @cell_grid[1][1], @cell_grid[1][2]].all? {|x| x.marker == player.marker}
+      row3 = [@cell_grid[2][0], @cell_grid[2][1], @cell_grid[2][2]].all? {|x| x.marker == player.marker}
+      [row1, row2, row3].any?
   end
 
-  def win_column
+  def win_column(player)
+    col1 = [@cell_grid[0][0], @cell_grid[1][0], @cell_grid[2][0]].all? {|x| x.marker == player.marker}
+    col2 = [@cell_grid[0][1], @cell_grid[1][1], @cell_grid[2][1]].all? {|x| x.marker == player.marker}
+    col3 = [@cell_grid[0][2], @cell_grid[1][2], @cell_grid[2][2]].all? {|x| x.marker == player.marker}
+    [col1, col2, col3].any?
   end
 
-  def win_diagonal
+  def win_diagonal(player)
+    dia1 = [@cell_grid[0][0], @cell_grid[1][1], @cell_grid[2][2]].all? {|x| x.marker == player.marker}
+    dia2 = [@cell_grid[0][2], @cell_grid[1][1], @cell_grid[2][0]].all? {|x| x.marker == player.marker}
+    [dia1, dia2].any?
   end
 
   def choose_cell(player)
-    puts "#{player.name} choose your position, (1 - 9): "
+    puts "#{player.name.capitalize} choose your position, (1 - 9): "
     position = gets.chomp.to_i
     until (1..9).include? position
-      puts "Invalid Entry #{player.name}, re-enter your position: "
+      puts "Invalid Entry #{player.name.capitalize}, re-enter your position: "
       position = gets.chomp
     end
     find_cell = nil
@@ -130,6 +145,7 @@ class Game
 
   def initialize
     @board = Board.new
+    @game_on = true
   end
   def welcome_message
     puts "Welcome to Tic Tac Toe \n\n"
@@ -138,7 +154,11 @@ class Game
 
   end
 
-  def game_over
+  def game_over(player)
+   if @board.winning_position(player)
+    puts "Congratulations #{player.name.capitalize} wins!"
+    @game_on = false
+   end
   end
 
   def game_replay
@@ -172,11 +192,14 @@ class Game
     puts "#{player_second.name.capitalize}, your marker is #{player_second.marker}"
 
     player = player_first
-    @board.choose_cell(player)
-    @board.draw
-    player = player_second
-    @board.choose_cell(player)
-    @board.draw
+    
+    while @game_on
+      @board.choose_cell(player)
+      player = player == player_first ? player_second : player_first
+      @board.draw
+      game_over(player)
+      
+    end
   end
 end
 
