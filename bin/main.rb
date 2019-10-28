@@ -2,6 +2,9 @@
 
 class Cell
   attr_accessor :position
+  attr_reader :id
+  attr_accessor :marker
+
   def initialize(id=nil, position=nil)
     @id = id
     @marker = nil
@@ -10,17 +13,6 @@ class Cell
 
   def content
     @marker != nil ? @marker : @id
-  end
-
-  def choose_position(player)
-    puts "#{player} choose your position, (1 - 9): "
-    position = gets.chomp.to_i
-    until (1..9).include? position
-      puts "Invalid Entry #{player}, re-enter your position: "
-      position = gets.chomp
-    end
-    @position = position
-
   end
 end
 
@@ -93,6 +85,32 @@ class Board
   def win_diagonal
   end
 
+  def choose_cell(player)
+    puts "#{player.name} choose your position, (1 - 9): "
+    position = gets.chomp.to_i
+    until (1..9).include? position
+      puts "Invalid Entry #{player.name}, re-enter your position: "
+      position = gets.chomp
+    end
+    find_cell = nil
+    @cell_grid.each do |row|
+      find_cell = row.select do |x|
+        x.id == position
+      end
+      find_cell = find_cell.first
+
+      break unless find_cell == nil
+    end
+
+    if find_cell.marker == nil
+      find_cell.marker = player.marker
+    else
+      puts "Cell already taken, please choose another position"
+      choose_cell(player)
+    end
+    
+  end
+
   def reset
     @cell_grid = []
     id = 1
@@ -153,10 +171,12 @@ class Game
     puts "#{player_first.name.capitalize}, your marker is #{player_first.marker}"
     puts "#{player_second.name.capitalize}, your marker is #{player_second.marker}"
 
-    cell = Cell.new
     player = player_first
-    cell.choose_position(player.name)
-    @board.cell_grid
+    @board.choose_cell(player)
+    @board.draw
+    player = player_second
+    @board.choose_cell(player)
+    @board.draw
   end
 end
 
