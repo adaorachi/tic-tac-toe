@@ -1,14 +1,26 @@
 # frozen_string_literal: true
 
 class Cell
-
-  def initialize(id)
+  attr_accessor :position
+  def initialize(id=nil, position=nil)
     @id = id
     @marker = nil
+    @position = position
   end
 
   def content
     @marker != nil ? @marker : @id
+  end
+
+  def choose_position(player)
+    puts "#{player} choose your position, (1 - 9): "
+    position = gets.chomp.to_i
+    until (1..9).include? position
+      puts "Invalid Entry #{player}, re-enter your position: "
+      position = gets.chomp
+    end
+    @position = position
+
   end
 end
 
@@ -66,6 +78,7 @@ class Board
   end
 
   def display_board
+
   end
 
   def winning_position
@@ -139,6 +152,11 @@ class Game
     puts "\n\n"
     puts "#{player_first.name.capitalize}, your marker is #{player_first.marker}"
     puts "#{player_second.name.capitalize}, your marker is #{player_second.marker}"
+
+    cell = Cell.new
+    player = player_first
+    cell.choose_position(player.name)
+    @board.cell_grid
   end
 end
 
