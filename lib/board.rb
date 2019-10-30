@@ -39,9 +39,9 @@ class Board
 
     @cell_grid = []
     id = 1
-    (0..2).each do
+    3.times do
       current_row = []
-      (0..2).each do
+      3.times do
         current_row.push(Cell.new(id))
         id += 1
       end
