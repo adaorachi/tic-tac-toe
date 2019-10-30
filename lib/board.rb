@@ -39,9 +39,9 @@ class Board
 
     @cell_grid = []
     id = 1
-    (0..2).each do |row|
+    (0..2).each do
       current_row = []
-      (0..2).each do |column|
+      (0..2).each do
         current_row.push(Cell.new(id))
         id += 1
       end
