@@ -1,5 +1,5 @@
-#!/usr/bin/env ruby
 # frozen_string_literal: true
+#!/usr/bin/env ruby
 
 require_relative('../lib/player.rb')
 require_relative('../lib/board.rb')
