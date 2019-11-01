@@ -1,5 +1,7 @@
 # frozen_string_literal: true
+
 require_relative('player.rb')
+
 class Board
   attr_reader :cell_grid, :available, :player1, :player2
   def initialize(player1, player2, marker1, marker2)
