@@ -1,7 +1,7 @@
+#!/usr/bin/env ruby
 # frozen_string_literal: true
 
 require_relative('../lib/player.rb')
-require_relative('../lib/cell.rb')
 require_relative('../lib/board.rb')
 
 class Game 
@@ -16,13 +16,13 @@ class Game
   def draw_board(cell_grid, available)
     row = cell_grid[0]
     puts "Available      TIC-TAC_TOE\nmoves\n\n"
-    puts "#{row[0].content} | #{row[1].content} | #{row[2].content}       #{available[0]} | #{available[1]} | #{available[2]}"
+    puts "#{row[0]} | #{row[1]} | #{row[2]}       #{available[0]} | #{available[1]} | #{available[2]}"
     puts "---------       ---------"
     row = cell_grid[1]
-    puts "#{row[0].content} | #{row[1].content} | #{row[2].content}       #{available[3]} | #{available[4]} | #{available[5]}"
+    puts "#{row[0]} | #{row[1]} | #{row[2]}       #{available[3]} | #{available[4]} | #{available[5]}"
     puts "---------       ---------"
     row = cell_grid[2]
-    puts "#{row[0].content} | #{row[1].content} | #{row[2].content}       #{available[6]} | #{available[7]} | #{available[8]}"
+    puts "#{row[0]} | #{row[1]} | #{row[2]}       #{available[6]} | #{available[7]} | #{available[8]}"
   end
 
   def game_over(player)
@@ -42,11 +42,8 @@ class Game
     end
 
     game_tied = true
-    @board.cell_grid.each do |row|
-      if row.any? { |x| x.marker == nil }
-        game_tied = false
-        break
-      end
+    if @board.available.any? { |x| x == ' ' }
+      game_tied = false
     end
 
     if game_tied
@@ -134,15 +131,15 @@ class Game
     find_cell = nil
     @board.cell_grid.each do |row|
       find_cell = row.select do |x|
-        x.id == position
+        x == position
       end
       find_cell = find_cell.first
 
       break unless find_cell.nil?
     end
 
-    if find_cell.marker.nil?
-      find_cell.marker = ' '
+    if find_cell.nil?
+      find_cell = ' '
       @board.available[position - 1] = player.marker
     else
       sleep_mode(1)
@@ -152,7 +149,7 @@ class Game
   end
 
   def sleep_mode(sec)
-    sleep(sec)
+    sleep(sec/2)
     puts "\n\n"
   end
 

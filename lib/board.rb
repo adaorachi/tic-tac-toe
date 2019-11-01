@@ -42,7 +42,7 @@ class Board
     3.times do
       current_row = []
       3.times do
-        current_row.push(Cell.new(id))
+        current_row.push(id.to_s)
         id += 1
       end
       cell_grid.push(current_row)
