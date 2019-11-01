@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-
 require_relative('../lib/player.rb')
 require_relative('../lib/board.rb')
 
@@ -25,17 +24,17 @@ class Game
   def game_over(player)
     if @board.winning_position(player)
       puts "Congratulations #{player.name.capitalize} wins!"
-      player.score += 1
+      player.add_score
       sleep_mode(1)
       puts 'Scores'
-      point1 = @player1.score > 1 ? 'points' : 'point'
-      point2 = @player2.score > 1 ? 'points' : 'point'
+      point1 = @board.player1.score > 1 ? 'points' : 'point'
+      point2 = @board.player2.score > 1 ? 'points' : 'point'
 
-      puts "#{@player1.name.capitalize} has #{@player1.score} #{point1}"
-      puts "#{@player2.name.capitalize} has #{@player2.score} #{point2}"
+      puts "#{@board.player1.name.capitalize} has #{@board.player1.score} #{point1}"
+      puts "#{@board.player2.name.capitalize} has #{@board.player2.score} #{point2}"
 
       @game_on = false
-      game_replay(@player1, @player2)
+      game_replay(@board.player1, @board.player2)
     end
 
     game_tied = true
@@ -47,14 +46,14 @@ class Game
       puts 'The game is a tie!.'
       sleep_mode(1)
       puts 'Scores'
-      point1 = @player1.score > 1 ? 'points' : 'point'
-      point2 = @player2.score > 1 ? 'points' : 'point'
+      point1 = @board.player1.score > 1 ? 'points' : 'point'
+      point2 = @board.player2.score > 1 ? 'points' : 'point'
 
-      puts "#{@player1.name.capitalize} has #{@player1.score} #{point1}"
-      puts "#{@player2.name.capitalize} has #{@player2.score} #{point2}"
+      puts "#{@board.player1.name.capitalize} has #{@board.player1.score} #{point1}"
+      puts "#{@board.player2.name.capitalize} has #{@board.player2.score} #{point2}"
 
       @game_on = false
-      game_replay(@player1, @player2)
+      game_replay(@board.player1, @board.player2)
     end
   end
 
@@ -91,7 +90,7 @@ class Game
       @board.reset
       draw_board(@board.cell_grid, @board.available)
       @game_on = true
-      game_flip
+      game_flip(@board.player1.name)
     end
   end
 
@@ -119,11 +118,11 @@ class Game
   end
 
   def choose_cell(player)
-    puts "#{player.capitalize} (), choose your position, (1 - 9): "
+    puts "#{player.name.capitalize} (#{player.marker}), choose your position, (1 - 9): "
     position = gets.chomp.to_i
     until @board.valid?(position)
       sleep_mode(1)
-      puts "Invalid Entry #{player.capitalize}, re-enter your position: "
+      puts "Invalid Entry #{player.name.capitalize}, re-enter your position: "
       position = gets.chomp.to_i
     end
 
@@ -133,7 +132,7 @@ class Game
       @board.set_marker(position, player.marker)
     else
       sleep_mode(1)
-      puts "Cell already taken #{player.capitalize}, please choose another position"
+      puts "Cell already taken #{player.name.capitalize}, please choose another position"
       choose_cell(player)
     end
   end
@@ -218,40 +217,19 @@ class Game
     puts "Hello #{player1.capitalize} and #{player2.capitalize} :)"
   end
 
-  def game_flip
-    random = Player.random_player(@player1, @player2)
-
-    player_first = random[0]
-    player_second = random[1]
-
+  def game_flip (start_player)
     sleep_mode(2)
-    puts "#{player_first.capitalize} goes first!"
-
-    # marker1 = random[0] == name1 ? :X : :O 
-    # marker2 = random[0] == name2 ? :O : :X 
-
+    puts "#{start_player.capitalize} goes first!"
     sleep_mode(2)
-    # player_first.marker = player_marker(player_first)
-
-    # player_second.marker = player_first.marker == :X ? :O : :X
-
-    marker1 = player_marker(player_first)
-    marker2 = marker1 == :X ? :O : :X
-
-    sleep_mode(2)
-    puts "#{player_first.capitalize}, your marker is #{marker1}"
-    sleep(2)
-    puts "#{player_second.capitalize}, your marker is #{marker2}"
 
     sleep_mode(2)
     puts 'Displaying board...'
-    
-    @board = Board.new(@player1, @player2, marker1, marker2)
+      
     sleep_mode(2)
     draw_board(@board.cell_grid, @board.available)
     sleep_mode(1)
 
-    player = player_first
+    player = start_player == @board.player1.name ? @board.player1 : @board.player2
     while @game_on
       choose_cell(player)
       sleep_mode(1)
@@ -260,13 +238,24 @@ class Game
       draw_board(@board.cell_grid, @board.available)
       puts "\n\n"
       game_over(player)
-      player = player == player_first ? player_second : player_first
+      player = player.name == @board.player1.name ? @board.player2 : @board.player1
     end 
   end
 
   def play
     game_intro
-    game_flip
+    random = Player.random_player(@player1, @player2)
+    player_first = random[0]
+    player_second = random[1]
+    marker1 = player_marker(player_first)
+    marker2 = marker1 == :X ? :O : :X
+    @board = Board.new(player_first, player_second, marker1, marker2)
+    sleep_mode(2)
+    player = player_first == @board.player1.name ? @board.player1 : @board.player2
+    puts "#{player_first.capitalize}, your marker is #{player.marker}"
+    sleep(2)
+    puts "#{player_second.capitalize}, your marker is #{player.marker == :X ? :O : :X }"
+    game_flip(player_first)
   end
 end
 

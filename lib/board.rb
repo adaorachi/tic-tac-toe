@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require_relative('player.rb')
 class Board
-  attr_reader :cell_grid, :available
+  attr_reader :cell_grid, :available, :player1, :player2
   def initialize(player1, player2, marker1, marker2)
     reset
     @player1 = Player.new(player1, marker1)
@@ -29,7 +29,7 @@ class Board
   def win_column(player)
     col1 = all_equals?([@available[0], @available[3], @available[6]], player.marker)
     col2 = all_equals?([@available[1], @available[4], @available[7]], player.marker)
-    col3 = all_equals?([@available[2], @available[45], @available[8]], player.marker)
+    col3 = all_equals?([@available[2], @available[5], @available[8]], player.marker)
     [col1, col2, col3].any?
   end
 

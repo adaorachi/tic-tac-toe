@@ -2,7 +2,7 @@
 
 class Player
   # attr_accessor :score
-  attr_reader :name, :score
+  attr_reader :name, :score, :marker
   def initialize(name, marker)
     @name = name
     @marker = marker
@@ -11,5 +11,9 @@ class Player
 
   def self.random_player(*args)
     args.shuffle
+  end
+
+  def add_score
+    @score += 1
   end
 end
