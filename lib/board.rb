@@ -33,19 +33,29 @@ class Board
     [dia1, dia2].any?
   end
 
+  def is_valid?(pos)
+    return true if (1..9).include? pos
+    return false
+  end
+
+  def set_marker(pos, marker)
+    @available[pos - 1] = marker
+    @cell_grid[pos - 1] = ' '
+  end
+
+  def get_marker(pos)
+    return @available[pos-1]
+  end
+
   def reset
     @available = []
-    10.times { @available << ' ' }
+    9.times { @available << ' ' }
 
     @cell_grid = []
     id = 1
-    3.times do
-      current_row = []
-      3.times do
-        current_row.push(id.to_s)
-        id += 1
-      end
-      cell_grid.push(current_row)
+    9.times do
+      cell_grid.push(id.to_s)
+      id += 1
     end
   end
 end

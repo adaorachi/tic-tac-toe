@@ -14,15 +14,13 @@ class Game
   end
 
   def draw_board(cell_grid, available)
-    row = cell_grid[0]
+    row = cell_grid
     puts "Available      TIC-TAC_TOE\nmoves\n\n"
     puts "#{row[0]} | #{row[1]} | #{row[2]}       #{available[0]} | #{available[1]} | #{available[2]}"
     puts "---------       ---------"
-    row = cell_grid[1]
-    puts "#{row[0]} | #{row[1]} | #{row[2]}       #{available[3]} | #{available[4]} | #{available[5]}"
+    puts "#{row[3]} | #{row[4]} | #{row[5]}       #{available[3]} | #{available[4]} | #{available[5]}"
     puts "---------       ---------"
-    row = cell_grid[2]
-    puts "#{row[0]} | #{row[1]} | #{row[2]}       #{available[6]} | #{available[7]} | #{available[8]}"
+    puts "#{row[6]} | #{row[7]} | #{row[8]}       #{available[6]} | #{available[7]} | #{available[8]}"
   end
 
   def game_over(player)
@@ -74,6 +72,7 @@ class Game
     if replay == 'n'
       sleep_mode(2)
       puts "Alright then! Bye #{player1.name.capitalize} and #{player2.name.capitalize} :)"
+      @game_on = false
       sleep_mode(2)
     elsif replay == 'y'
       sleep_mode(3)
@@ -123,24 +122,16 @@ class Game
   def choose_cell(player)
     puts "#{player.name.capitalize} (#{player.marker}), choose your position, (1 - 9): "
     position = gets.chomp.to_i
-    until (1..9).include? position
+    until @board.is_valid?(position)
       sleep_mode(1)
       puts "Invalid Entry #{player.name.capitalize}, re-enter your position: "
       position = gets.chomp.to_i
     end
-    find_cell = nil
-    @board.cell_grid.each do |row|
-      find_cell = row.select do |x|
-        x == position
-      end
-      find_cell = find_cell.first
 
-      break unless find_cell.nil?
-    end
+    find_cell = @board.get_marker(position)
 
-    if find_cell.nil?
-      find_cell = ' '
-      @board.available[position - 1] = player.marker
+    if ['X', 'O'].none? { |x| x == find_cell }
+      @board.set_marker(position, player.marker)
     else
       sleep_mode(1)
       puts "Cell already taken #{player.name.capitalize}, please choose another position"
@@ -149,7 +140,7 @@ class Game
   end
 
   def sleep_mode(sec)
-    sleep(sec/2)
+    sleep(sec/10)
     puts "\n\n"
   end
 
