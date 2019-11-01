@@ -7,7 +7,6 @@ require_relative('../lib/board.rb')
 class Game 
   attr_accessor :board
   def initialize
-    @board = Board.new
     @game_on = true
     @player1 = nil
     @player2 = nil
@@ -109,32 +108,32 @@ class Game
   end
 
   def player_marker(player)
-    puts "#{player.name.capitalize} choose your marker (X or O): "
-    marker = gets.chomp.upcase
-    until %w[X O].include? marker
+    puts "#{player.capitalize} choose your marker (X or O): "
+    marker = gets.chomp.upcase.to_sym
+    until [:X, :O].include? marker
       sleep_mode(1)
-      puts "Invalid Entry #{player.name.capitalize}, please re-enter your marker: "
-      marker = gets.chomp.upcase
+      puts "Invalid Entry #{player.capitalize}, please re-enter your marker: "
+      marker = gets.chomp.upcase.to_sym
     end
     marker
   end
 
   def choose_cell(player)
-    puts "#{player.name.capitalize} (#{player.marker}), choose your position, (1 - 9): "
+    puts "#{player.capitalize} (), choose your position, (1 - 9): "
     position = gets.chomp.to_i
-    until @board.is_valid?(position)
+    until @board.valid?(position)
       sleep_mode(1)
-      puts "Invalid Entry #{player.name.capitalize}, re-enter your position: "
+      puts "Invalid Entry #{player.capitalize}, re-enter your position: "
       position = gets.chomp.to_i
     end
 
     find_cell = @board.get_marker(position)
 
-    if ['X', 'O'].none? { |x| x == find_cell }
+    if [:X, :O].none? { |x| x == find_cell }
       @board.set_marker(position, player.marker)
     else
       sleep_mode(1)
-      puts "Cell already taken #{player.name.capitalize}, please choose another position"
+      puts "Cell already taken #{player.capitalize}, please choose another position"
       choose_cell(player)
     end
   end
@@ -200,41 +199,54 @@ class Game
     welcome_message
     instruction
 
-    sleep_mode(2)
-    player1 = Player.new(player_name('Player 1'))
+    # sleep_mode(2)
+    # puts 'Player 1, Enter your name: '
+    # name1 = gets.chomp
+
+    # sleep_mode(2)
+    # puts 'Player 2, Enter your name: '
+    # name2 = gets.chomp
+
+    player1 = player_name('Player 1')
     @player1 = player1
 
     sleep_mode(2)
-    player2 = Player.new(player_name('Player 2'))
+    player2 = player_name('Player 2')
     @player2 = player2
 
     sleep_mode(2)
-    puts "Hello #{player1.name.capitalize} and #{player2.name.capitalize} :)"
+    puts "Hello #{player1.capitalize} and #{player2.capitalize} :)"
   end
 
   def game_flip
-    player_first = Player.new('')
-    random = player_first.random_player(@player1, @player2)
+    random = Player.random_player(@player1, @player2)
 
     player_first = random[0]
     player_second = random[1]
 
     sleep_mode(2)
-    puts "#{player_first.name.capitalize} goes first!"
+    puts "#{player_first.capitalize} goes first!"
+
+    # marker1 = random[0] == name1 ? :X : :O 
+    # marker2 = random[0] == name2 ? :O : :X 
 
     sleep_mode(2)
-    player_first.marker = player_marker(player_first)
+    # player_first.marker = player_marker(player_first)
 
-    player_second.marker = player_first.marker == 'X' ? 'O' : 'X'
+    # player_second.marker = player_first.marker == :X ? :O : :X
+
+    marker1 = player_marker(player_first)
+    marker2 = marker1 == :X ? :O : :X
 
     sleep_mode(2)
-    puts "#{player_first.name.capitalize}, your marker is #{player_first.marker}"
+    puts "#{player_first.capitalize}, your marker is #{marker1}"
     sleep(2)
-    puts "#{player_second.name.capitalize}, your marker is #{player_second.marker}"
+    puts "#{player_second.capitalize}, your marker is #{marker2}"
 
     sleep_mode(2)
     puts 'Displaying board...'
-
+    
+    @board = Board.new(@player1, @player2, marker1, marker2)
     sleep_mode(2)
     draw_board(@board.cell_grid, @board.available)
     sleep_mode(1)

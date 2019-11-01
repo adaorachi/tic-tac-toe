@@ -1,9 +1,11 @@
 # frozen_string_literal: true
-
+require_relative('player.rb')
 class Board
-  attr_accessor :cell_grid, :available
-  def initialize
+  attr_reader :cell_grid, :available
+  def initialize(player1, player2, marker1, marker2)
     reset
+    @player1 = Player.new(player1, marker1)
+    @player2 = Player.new(player2, marker2)
   end
 
   def winning_position(player)
@@ -13,29 +15,32 @@ class Board
     [row, col, dia].any?
   end
 
+  def all_equals?(cells, marker)
+    [cells[0], cells[1], cells[2]].all? { |x| x == marker }
+  end
+
   def win_row(player)
-    row1 = [@available[0], @available[1], @available[2]].all? { |x| x == player.marker }
-    row2 = [@available[3], @available[4], @available[5]].all? { |x| x == player.marker }
-    row3 = [@available[6], @available[7], @available[8]].all? { |x| x == player.marker }
+    row1 = all_equals?([@available[0], @available[1], @available[2]], player.marker)
+    row2 = all_equals?([@available[3], @available[4], @available[5]], player.marker)
+    row3 = all_equals?([@available[6], @available[7], @available[8]], player.marker)
     [row1, row2, row3].any?
   end
 
   def win_column(player)
-    col1 = [@available[0], @available[3], @available[6]].all? { |x| x == player.marker }
-    col2 = [@available[1], @available[4], @available[7]].all? { |x| x == player.marker }
-    col3 = [@available[2], @available[5], @available[8]].all? { |x| x == player.marker }
+    col1 = all_equals?([@available[0], @available[3], @available[6]], player.marker)
+    col2 = all_equals?([@available[1], @available[4], @available[7]], player.marker)
+    col3 = all_equals?([@available[2], @available[45], @available[8]], player.marker)
     [col1, col2, col3].any?
   end
 
   def win_diagonal(player)
-    dia1 = [@available[0], @available[4], @available[8]].all? { |x| x == player.marker }
-    dia2 = [@available[2], @available[4], @available[6]].all? { |x| x == player.marker }
+    dia1 = all_equals?([@available[0], @available[4], @available[8]], player.marker)
+    dia2 = all_equals?([@available[2], @available[4], @available[6]], player.marker)
     [dia1, dia2].any?
   end
 
-  def is_valid?(pos)
-    return true if (1..9).include? pos
-    return false
+  def valid?(pos)
+    (1..9).include? pos
   end
 
   def set_marker(pos, marker)
@@ -44,7 +49,7 @@ class Board
   end
 
   def get_marker(pos)
-    return @available[pos-1]
+    @available[pos - 1]
   end
 
   def reset
